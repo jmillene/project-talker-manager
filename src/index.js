@@ -33,3 +33,13 @@ app.get('/talker', async (req, res) => {
 const listTalkers = await talkers();
 return res.status(200).json(listTalkers);
 });
+
+app.get('/talker/:id', async (req, res)=>{
+const talkerId = await talkers();
+const filtraid = talkerId.find(({id})=> id === Number(req.params.id));
+if(!filtraid){
+  return res.status(404).json({message:'Pessoa palestrante não encontrada'});
+}
+return res.status(200).json(filtraid);
+});
+//fonte https://www.youtube.com/watch?v=icNqDrk9Ojo
