@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const crypto = require('crypto');
+
 const app = express();
 app.use(bodyParser.json());
 
@@ -41,4 +43,11 @@ const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
   return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 }
 return res.status(200).json(filtraid);
+});
+
+app.post('/login', async (req, res) => {
+const newTalker = req.body;
+const token = crypto.randomBytes(8).toString('hex');
+res.status(200).json({ token });
+return newTalker;
 });
