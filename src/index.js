@@ -16,5 +16,20 @@ app.listen(PORT, () => {
   console.log('Online');
 });
 
-app.get('/talker',(req,res)=>{
-res.status(200).json({talker})});
+const fs = require('fs').promises;
+
+async function talkers() {
+  const array = [];
+  try {
+    const data = await fs.readFile('src/talker.json', 'utf-8');
+    const transformaJson = JSON.parse(data);
+    console.log(transformaJson);
+    return transformaJson;
+  } catch (error) {
+    return (`${array}`);
+  }
+}
+app.get('/talker', async (req, res) => { 
+const listTalkers = await talkers();
+return res.status(200).json(listTalkers);
+});
