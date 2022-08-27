@@ -45,7 +45,7 @@ const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
 return res.status(200).json(filtraid);
 });
 
-const validacaoEmail = (req, res) => {
+const valiEmail = (req, res) => {
   const { email } = req.body;
   const validacaoEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
   const valEmail = validacaoEmail.test(email);
@@ -69,9 +69,7 @@ const validaPassword = (req, res) => {
         message: 'O campo "password" deve ter pelo menos 6 caracteres' });
     }
 };
-app.post('/login', validacaoEmail, validaPassword, (req, res) => {
-const newTalker = req.body;
+app.post('/login', valiEmail, validaPassword, (req, res) => {
 const token = crypto.randomBytes(8).toString('hex');
 res.status(200).json({ token });
-return newTalker;
 });
