@@ -31,25 +31,33 @@ async function talkers() {
     return (`${array}`);
   }
 }
-app.get('/talker', async (req, res) => { 
-const listTalkers = await talkers();
-return res.status(200).json(listTalkers);
+app.get('/talker', async (req, res) => {
+  const listTalkers = await talkers();
+  return res.status(200).json(listTalkers);
 });
 
 app.get('/talker/:id', async (req, res) => {
-const talkerId = await talkers();
-const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
+  const talkerId = await talkers();
+  const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
   if (!filtraid) {
-  return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-}
-return res.status(200).json(filtraid);
+    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  }
+  return res.status(200).json(filtraid);
 });
 
-const valiEmail = (req, res) => {
-  const { email } = req.body;
+app.post('/login',(req, res) => {
+  const token = crypto.randomBytes(8).toString('hex');
+  const {email,password} = req.body;
+  if (!password) {
+    return res.status(400).json({ message: 'O campo "password" é obrigatório' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({
+      message: 'O \"password\" deve ter pelo menos 6 caracteres'
+    });
+  }
   const validacaoEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
   const valEmail = validacaoEmail.test(email);
-
   if (!email) {
     return res.status(400).json({
       message: 'O campo "email" é obrigatório',
@@ -58,18 +66,5 @@ const valiEmail = (req, res) => {
   if (!valEmail) {
     return res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
   }
-  };
-const validaPassword = (req, res) => {
-  const { password } = req.body;
-    if (!password) {
-      return res.status(400).json({ message: 'O campo "password" é obrigatório' });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ 
-        message: 'O campo "password" deve ter pelo menos 6 caracteres' });
-    }
-};
-app.post('/login', valiEmail, validaPassword, (req, res) => {
-const token = crypto.randomBytes(8).toString('hex');
-res.status(200).json({ token });
+  return res.status(200).json({ token });
 });
