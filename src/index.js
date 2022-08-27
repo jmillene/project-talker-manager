@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const crypto = require('crypto');
 
 const app = express();
@@ -19,6 +18,7 @@ app.listen(PORT, () => {
 });
 
 const fs = require('fs').promises;
+const validacao = require('./validacaoTalker');
 
 async function talkers() {
   const array = [];
@@ -28,7 +28,7 @@ async function talkers() {
     console.log(transformaJson);
     return transformaJson;
   } catch (error) {
-    return (`${array}`);
+    return `${array}`;
   }
 }
 app.get('/talker', async (req, res) => {
@@ -40,20 +40,31 @@ app.get('/talker/:id', async (req, res) => {
   const talkerId = await talkers();
   const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
   if (!filtraid) {
-    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    return res
+      .status(404)
+      .json({ message: 'Pessoa palestrante não encontrada' });
   }
   return res.status(200).json(filtraid);
 });
+app.post('/talker', validacao, async (req, res) => {
+  const newTalker = req.body;
+  const talker = await talkers();
+  console.log(talkers);
+  talker.push(newTalker);
+  return res.status(201).json(newTalker);
+});
 
-app.post('/login',(req, res) => {
+app.post('/login', (req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
-  const {email,password} = req.body;
+  const { email, password } = req.body;
   if (!password) {
-    return res.status(400).json({ message: 'O campo "password" é obrigatório' });
+    return res
+      .status(400)
+      .json({ message: 'O campo "password" é obrigatório' });
   }
   if (password.length < 6) {
     return res.status(400).json({
-      message: 'O \"password\" deve ter pelo menos 6 caracteres'
+      message: 'O "password" deve ter pelo menos 6 caracteres',
     });
   }
   const validacaoEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
@@ -64,7 +75,9 @@ app.post('/login',(req, res) => {
     });
   }
   if (!valEmail) {
-    return res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
+    return res
+      .status(400)
+      .json({ message: 'O "email" deve ter o formato "email@email.com"' });
   }
   return res.status(200).json({ token });
 });
