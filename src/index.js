@@ -45,7 +45,31 @@ const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
 return res.status(200).json(filtraid);
 });
 
-app.post('/login', async (req, res) => {
+const validacaoEmail = (req, res) => {
+  const { email } = req.body;
+  const validacaoEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+  const valEmail = validacaoEmail.test(email);
+
+  if (!email) {
+    return res.status(400).json({
+      message: 'O campo "email" é obrigatório',
+    });
+  }
+  if (!valEmail) {
+    return res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
+  }
+  };
+const validaPassword = (req, res) => {
+  const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({ message: 'O campo "password" é obrigatório' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        message: 'O campo "password" deve ter pelo menos 6 caracteres' });
+    }
+};
+app.post('/login', validacaoEmail, validaPassword, (req, res) => {
 const newTalker = req.body;
 const token = crypto.randomBytes(8).toString('hex');
 res.status(200).json({ token });
