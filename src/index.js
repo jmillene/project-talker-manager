@@ -85,8 +85,10 @@ validaRate,
 validaWatchedAt,
 validacaoWatchDate, async (req, res) => {
   const newTalker = req.body;
+  const { id } = req.params;
   const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
+  const removePut = transformaJson.filter((elemento) => elemento.id !== id);
   const newObj = { id: transformaJson.length + 1, ...newTalker };
   transformaJson.push(newObj);
   await fs.writeFile(armazenaJson, JSON.stringify(transformaJson));
