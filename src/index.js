@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const fs = require('fs').promises;
+const { validaEmail } = require('./validaEmail');
+const { validaPassword } = require('./validaPassword');
 
 const app = express();
 app.use(bodyParser.json());
@@ -16,9 +19,6 @@ app.get('/', (_request, response) => {
 app.listen(PORT, () => {
   console.log('Online');
 });
-
-const fs = require('fs').promises;
-const validacao = require('./validacaoTalker');
 
 async function talkers() {
   const array = [];
@@ -46,7 +46,7 @@ app.get('/talker/:id', async (req, res) => {
   }
   return res.status(200).json(filtraid);
 });
-app.post('/talker', validacao, async (req, res) => {
+app.post('/talker', async (req, res) => {
   const newTalker = req.body;
   const talker = await talkers();
   console.log(talkers);
@@ -54,30 +54,7 @@ app.post('/talker', validacao, async (req, res) => {
   return res.status(201).json(newTalker);
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', validaEmail, validaPassword, async (req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
-  const { email, password } = req.body;
-  if (!password) {
-    return res
-      .status(400)
-      .json({ message: 'O campo "password" é obrigatório' });
-  }
-  if (password.length < 6) {
-    return res.status(400).json({
-      message: 'O "password" deve ter pelo menos 6 caracteres',
-    });
-  }
-  const validacaoEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-  const valEmail = validacaoEmail.test(email);
-  if (!email) {
-    return res.status(400).json({
-      message: 'O campo "email" é obrigatório',
-    });
-  }
-  if (!valEmail) {
-    return res
-      .status(400)
-      .json({ message: 'O "email" deve ter o formato "email@email.com"' });
-  }
   return res.status(200).json({ token });
 });
