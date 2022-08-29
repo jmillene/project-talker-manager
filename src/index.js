@@ -13,6 +13,7 @@ const {
   validaWatchedAt,
   validacaoWatchDate } = require('./validacaoTalker');
 
+const armazenaJson = 'src/talker.json';
 const app = express();
 app.use(bodyParser.json());
 
@@ -31,7 +32,7 @@ app.listen(PORT, () => {
 async function talkers() {
   const array = [];
   try {
-    const data = await fs.readFile('src/talker.json', 'utf-8');
+    const data = await fs.readFile(armazenaJson, 'utf-8');
     const transformaJson = JSON.parse(data);
     return transformaJson;
   } catch (error) {
@@ -62,12 +63,12 @@ validaRate,
 validaWatchedAt,
 validacaoWatchDate, async (req, res) => {
   const newTalker = req.body;
-  const data = await fs.readFile('src/talker.json', 'utf-8');
+  const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
   const newObj = { id: transformaJson.length + 1, ...newTalker };
   console.log(newObj);
   transformaJson.push(newObj);
-  await fs.writeFile('src/talker.json', JSON.stringify(transformaJson));
+  await fs.writeFile(armazenaJson, JSON.stringify(transformaJson));
   return res.status(201).json(newObj);
 });
 
@@ -76,18 +77,18 @@ app.post('/login', validaEmail, validaPassword, async (req, res) => {
   return res.status(200).json({ token });
 });
 
-app.put('/talker/:id',autorizacaoHeaders,
+app.put('/talker/:id', autorizacaoHeaders,
 validaAge,
 validaNome,
 validaTalk,
 validaRate,
 validaWatchedAt,
-validacaoWatchDate, async (req,res) => {
+validacaoWatchDate, async (req, res) => {
   const newTalker = req.body;
-  const data = await fs.readFile('src/talker.json', 'utf-8');
+  const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
   const newObj = { id: transformaJson.length + 1, ...newTalker };
   transformaJson.push(newObj);
-  await fs.writeFile('src/talker.json', JSON.stringify(transformaJson));
+  await fs.writeFile(armazenaJson, JSON.stringify(transformaJson));
   return res.status(200).json(newObj);
-})
+});
