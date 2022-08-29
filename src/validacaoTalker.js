@@ -44,7 +44,6 @@ const validaAge = (req, res, next) => {
 
 const validaTalk = (req, res, next) => {
   const { talk } = req.body;
-  console.log(talk);
   if (!talk || talk === '') {
     return res.status(400).json({
       message: 'O campo "talk" é obrigatório',
