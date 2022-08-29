@@ -75,3 +75,19 @@ app.post('/login', validaEmail, validaPassword, async (req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   return res.status(200).json({ token });
 });
+
+app.put('/talker/:id',autorizacaoHeaders,
+validaAge,
+validaNome,
+validaTalk,
+validaRate,
+validaWatchedAt,
+validacaoWatchDate, async (req,res) => {
+  const newTalker = req.body;
+  const data = await fs.readFile('src/talker.json', 'utf-8');
+  const transformaJson = await JSON.parse(data);
+  const newObj = { id: transformaJson.length + 1, ...newTalker };
+  transformaJson.push(newObj);
+  await fs.writeFile('src/talker.json', JSON.stringify(transformaJson));
+  return res.status(200).json(newObj);
+})

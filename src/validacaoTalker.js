@@ -15,12 +15,12 @@ const autorizacaoHeaders = (req, res, next) => {
 const validaNome = (req, res, next) => {
   const { name } = req.body;
   if (!name) {
-    res.status(400).json({
+  return res.status(400).json({
       message: 'O campo "name" é obrigatório',
     });
   }
   if (name.length < 3) {
-    res.status(400).json({
+  return res.status(400).json({
       message: 'O "name" deve ter pelo menos 3 caracteres',
     });
   }
@@ -30,12 +30,12 @@ const validaAge = (req, res, next) => {
   const { age } = req.body;
 
   if (!age) {
-    res.status(400).json({
+   return res.status(400).json({
       message: 'O campo "age" é obrigatório',
     });
   }
   if (age < 18) {
-    res.status(400).json({
+   return res.status(400).json({
       message: 'A pessoa palestrante deve ser maior de idade',
     });
   }
@@ -79,7 +79,7 @@ const validaRate = (req, res, next) => {
   const {
     talk: { rate },
   } = req.body;
-  if (!rate) {
+  if (!rate && rate !== 0) {
     return res.status(400).json({
       message: 'O campo "rate" é obrigatório',
     });
