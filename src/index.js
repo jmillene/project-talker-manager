@@ -64,7 +64,7 @@ validacaoWatchDate, async (req, res) => {
   const newTalker = req.body;
   const data = await fs.readFile('src/talker.json', 'utf-8');
   const transformaJson = await JSON.parse(data);
-  const newObj = { ...newTalker, id: transformaJson.length + 1 };
+  const newObj = {id: transformaJson.length + 1 , ...newTalker};
   console.log(newObj);
   transformaJson.push(newObj);
   await fs.writeFile('src/talker.json', JSON.stringify(transformaJson));
