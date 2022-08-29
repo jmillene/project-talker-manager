@@ -4,6 +4,14 @@ const crypto = require('crypto');
 const fs = require('fs').promises;
 const { validaEmail } = require('./validaEmail');
 const { validaPassword } = require('./validaPassword');
+const {  
+  autorizacaoHeaders,
+  validaAge,
+  validaNome,
+  validaRate,
+  validaTalk,
+  validaWatchedAt,
+  validacaoWatchDate } = require('./validacaoTalker');
 
 const app = express();
 app.use(bodyParser.json());
@@ -25,7 +33,6 @@ async function talkers() {
   try {
     const data = await fs.readFile('src/talker.json', 'utf-8');
     const transformaJson = JSON.parse(data);
-    console.log(transformaJson);
     return transformaJson;
   } catch (error) {
     return `${array}`;
@@ -46,12 +53,22 @@ app.get('/talker/:id', async (req, res) => {
   }
   return res.status(200).json(filtraid);
 });
-app.post('/talker', async (req, res) => {
+app.post('/talker', 
+autorizacaoHeaders,
+validaAge,
+validaNome,
+validaTalk,
+validaRate,
+validaWatchedAt,
+validacaoWatchDate, async (req, res) => {
   const newTalker = req.body;
-  const talker = await talkers();
-  console.log(talkers);
-  talker.push(newTalker);
-  return res.status(201).json(newTalker);
+  const data = await fs.readFile('src/talker.json', 'utf-8');
+  const transformaJson = await JSON.parse(data);
+  const newObj = { ...newTalker, id: transformaJson.length + 1 };
+  console.log(newObj);
+  transformaJson.push(newObj);
+  await fs.writeFile('src/talker.json', JSON.stringify(transformaJson));
+  return res.status(201).json(newObj);
 });
 
 app.post('/login', validaEmail, validaPassword, async (req, res) => {
