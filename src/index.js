@@ -94,9 +94,16 @@ validacaoWatchDate, async (req, res) => {
   const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
   const id = Number(req.params.id);
-  const removePut = transformaJson.find((elemento) => elemento.id === Number(id));
-  await fs.writeFile(armazenaJson, JSON.stringify(removePut));
-  return res.status(204).json();
+  const newTalker = {
+    ...req.body,
+    id,
+  };
+  const index = transformaJson.findIndex((elemento) => elemento.id === Number(id));
+  console.log('antes', transformaJson);
+  transformaJson[index] = newTalker;
+  console.log('depois', transformaJson);
+  await fs.writeFile(armazenaJson, JSON.stringify(transformaJson));
+  return res.status(200).json(newTalker);
 });
 app.delete('/talker/:id', autorizacaoHeaders, async (req, res) => {
  const data = await fs.readFile(armazenaJson, 'utf-8');
