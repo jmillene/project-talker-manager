@@ -43,6 +43,13 @@ app.get('/talker', async (req, res) => {
   const listTalkers = await talkers();
   return res.status(200).json(listTalkers);
 });
+app.get('/talker/search/', autorizacaoHeaders, async (req, res) => {
+  const data = await fs.readFile(armazenaJson, 'utf-8');
+  const transformaJson = await JSON.parse(data);
+  const { q } = req.query;
+  const filtraNome = transformaJson.find((elemento) => elemento.name.includes(q));
+  return res.status(200).json(filtraNome);
+});
 
 app.get('/talker/:id', async (req, res) => {
   const talkerId = await talkers();
@@ -66,7 +73,6 @@ validacaoWatchDate, async (req, res) => {
   const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
   const newObj = { id: transformaJson.length + 1, ...newTalker };
-  console.log(newObj);
   transformaJson.push(newObj);
   await fs.writeFile(armazenaJson, JSON.stringify(transformaJson));
   return res.status(201).json(newObj);
@@ -88,9 +94,14 @@ validacaoWatchDate, async (req, res) => {
   const { id } = req.params;
   const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
-  const removePut = transformaJson.filter((elemento) => elemento.id !== id);
-  const newObj = { id: transformaJson.length + 1, ...newTalker };
-  transformaJson.push(newObj);
-  await fs.writeFile(armazenaJson, JSON.stringify(transformaJson));
-  return res.status(200).json(newObj);
+  const removePut = transformaJson.find((elemento) => elemento.id === Number(id));
+  return res.status(200).json(removePut);
+});
+app.delete('/talker/:id', autorizacaoHeaders, async (req, res) => {
+ const data = await fs.readFile(armazenaJson, 'utf-8');
+ const transformaJson = await JSON.parse(data);
+ const id = Number(req.params.id);
+ const deleteItem = transformaJson.filter((elemento) => elemento.id !== id);
+ await fs.writeFile(armazenaJson, JSON.stringify(deleteItem));
+ return res.status(204).json();
 });
