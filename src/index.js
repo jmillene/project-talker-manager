@@ -53,7 +53,8 @@ app.get('/talker/search', autorizacaoHeaders, async (req, res) => {
 
 app.get('/talker/:id', async (req, res) => {
   const talkerId = await talkers();
-  const filtraid = talkerId.filter(({ id }) => id === Number(req.params.id));
+  const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
+  console.log(filtraid);
   if (!filtraid) {
     return res
       .status(404)
@@ -81,6 +82,21 @@ validacaoWatchDate, async (req, res) => {
 app.post('/login', validaEmail, validaPassword, async (req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   return res.status(200).json({ token });
+});
+
+app.put('/talker/:id', autorizacaoHeaders,
+validaAge,
+validaNome,
+validaTalk,
+validaRate,
+validaWatchedAt,
+validacaoWatchDate, async (req, res) => {
+  const data = await fs.readFile(armazenaJson, 'utf-8');
+  const transformaJson = await JSON.parse(data);
+  const id = Number(req.params.id);
+  const removePut = transformaJson.find((elemento) => elemento.id === Number(id));
+  await fs.writeFile(armazenaJson, JSON.stringify(removePut));
+  return res.status(204).json();
 });
 app.delete('/talker/:id', autorizacaoHeaders, async (req, res) => {
  const data = await fs.readFile(armazenaJson, 'utf-8');
