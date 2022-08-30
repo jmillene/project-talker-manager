@@ -43,7 +43,7 @@ app.get('/talker', async (req, res) => {
   const listTalkers = await talkers();
   return res.status(200).json(listTalkers);
 });
-app.get('/talker/search/', autorizacaoHeaders, async (req, res) => {
+app.get('/talker/search', autorizacaoHeaders, async (req, res) => {
   const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
   const { q } = req.query;
@@ -53,7 +53,7 @@ app.get('/talker/search/', autorizacaoHeaders, async (req, res) => {
 
 app.get('/talker/:id', async (req, res) => {
   const talkerId = await talkers();
-  const filtraid = talkerId.find(({ id }) => id === Number(req.params.id));
+  const filtraid = talkerId.filter(({ id }) => id === Number(req.params.id));
   if (!filtraid) {
     return res
       .status(404)
