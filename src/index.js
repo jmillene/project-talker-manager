@@ -47,7 +47,7 @@ app.get('/talker/search', autorizacaoHeaders, async (req, res) => {
   const data = await fs.readFile(armazenaJson, 'utf-8');
   const transformaJson = await JSON.parse(data);
   const { q } = req.query;
-  const filtraNome = transformaJson.find((elemento) => elemento.name.includes(q));
+  const filtraNome = transformaJson.filter((elemento) => elemento.name.includes(q));
   return res.status(200).json(filtraNome);
 });
 
@@ -81,21 +81,6 @@ validacaoWatchDate, async (req, res) => {
 app.post('/login', validaEmail, validaPassword, async (req, res) => {
   const token = crypto.randomBytes(8).toString('hex');
   return res.status(200).json({ token });
-});
-
-app.put('/talker/:id', autorizacaoHeaders,
-validaAge,
-validaNome,
-validaTalk,
-validaRate,
-validaWatchedAt,
-validacaoWatchDate, async (req, res) => {
-  const newTalker = req.body;
-  const { id } = req.params;
-  const data = await fs.readFile(armazenaJson, 'utf-8');
-  const transformaJson = await JSON.parse(data);
-  const removePut = transformaJson.find((elemento) => elemento.id === Number(id));
-  return res.status(200).json(removePut);
 });
 app.delete('/talker/:id', autorizacaoHeaders, async (req, res) => {
  const data = await fs.readFile(armazenaJson, 'utf-8');
